@@ -118,7 +118,7 @@ public class FetchMoviesTask extends AsyncTask<MoviePostersActivityFragment, Mov
             String prefKey = sharedPreferences.getString(moviePostersActivityFragment.getString(R.string.pref_sort_key), "");
 
             if(prefKey.equalsIgnoreCase(moviePostersActivityFragment.getString(R.string.pref_sort_most_popular))){
-                MOVIES_BASE_URL = "";
+                MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
             }
 
             if(prefKey.equalsIgnoreCase(moviePostersActivityFragment.getString(R.string.pref_sort_top_rated))){
