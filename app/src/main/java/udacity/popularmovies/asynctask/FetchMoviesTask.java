@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.util.Pair;
 import android.util.Log;
@@ -106,18 +107,26 @@ public class FetchMoviesTask extends AsyncTask<MoviePostersActivityFragment, Mov
 
         moviePostersActivityFragment = params[0];
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(moviePostersActivityFragment.getActivity());
-        String sortBy = sharedPreferences.getString(
-                moviePostersActivityFragment.getString(R.string.pref_sort_key),
-                moviePostersActivityFragment.getString(R.string.pref_sort_most_popular));
+        //String sortBy = sharedPreferences.getString(
+                //moviePostersActivityFragment.getString(R.string.pref_sort_key),
+                //moviePostersActivityFragment.getString(R.string.pref_sort_most_popular));
 
         try{
-            final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
+            String MOVIES_BASE_URL = "";
             final String API_KEY_PARAM = "api_key";
-            final String SORT_PREFERENCE = "sort_by";
+
+            String prefKey = sharedPreferences.getString(moviePostersActivityFragment.getString(R.string.pref_sort_key), "");
+
+            if(prefKey.equalsIgnoreCase(moviePostersActivityFragment.getString(R.string.pref_sort_most_popular))){
+                MOVIES_BASE_URL = "";
+            }
+
+            if(prefKey.equalsIgnoreCase(moviePostersActivityFragment.getString(R.string.pref_sort_top_rated))){
+                MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
+            }
 
             Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
                     .appendQueryParameter(API_KEY_PARAM, BuildConfig.MyMovieDbApiKey)
-                    .appendQueryParameter(SORT_PREFERENCE, sortBy)
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -169,7 +178,9 @@ public class FetchMoviesTask extends AsyncTask<MoviePostersActivityFragment, Mov
         ArrayList<Movie> movies = new ArrayList<>();
 
         try {
-            movies = getMovieDataFromJson(moviesJsonStr);
+            if(moviesJsonStr != null) {
+                movies = getMovieDataFromJson(moviesJsonStr);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
